@@ -1,5 +1,6 @@
 // @dart=2.9
 import 'package:flutter/material.dart';
+import 'package:mapbox_gl/mapbox_gl.dart';
 import 'dart:async';
 import 'package:mqtt_client/mqtt_client.dart' as mqtt;
 import 'package:smart_cycle_app/pages/location.dart';
@@ -11,7 +12,7 @@ void main() {
     routes: {
       '/': (context) => const MyApp(),
       '/lock': (context) => const Lock(),
-      '/location': (context) => MapWidget(),
+      '/location': (context) => const MapWidget(),
     },
   )); //
   // runApp(const MyApp());
@@ -38,8 +39,7 @@ class MyHomePage extends StatefulWidget {
 
   final String title;
 
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  @override  State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -51,6 +51,11 @@ class _MyHomePageState extends State<MyHomePage> {
   String password = 'seu_password';
   String clientIdentifier = 'android';
   String message = "Hello from flutter";
+  // LatLng myLocation = LatLng(26.1113, 91.4133);
+  double latitude = 26.1113;
+  double longitude = 91.4133;
+
+  List<String> topics = ['gunjan/movement', 'gunjan/lock', 'gunjan/longitude', 'gunjan/latitude'];
 
   double _temp = 20;
 
@@ -96,8 +101,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
     subscription = client.updates.listen(_onMessage);
 
-    // _subscribeToTopic("gunjan/phone2node");
-    _subscribeToTopic("gunjan/movement");
+    for (String topic in topics) {
+      _subscribeToTopic(topic);
+    }
   }
 
   @override
@@ -224,7 +230,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         // Navigator.pushNamed(context, '/location');
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => MapWidget()),
+                          MaterialPageRoute(builder: (context) => MapWidget(client: client, latitude: latitude, longitude: longitude,)),
                         );
                       },
                       tooltip: 'Map',
@@ -318,7 +324,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Text("OK"),
                 onPressed: () {
                   Navigator.of(context).pop();
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => MapWidget()));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => MapWidget(client: client, latitude: latitude, longitude: longitude,)));
                 },
               )
             ],
@@ -327,9 +333,31 @@ class _MyHomePageState extends State<MyHomePage> {
       );
     }
 
-    setState(() {
-      _temp = double.parse(message);
-    });
+    if(topic == "gunjan/latitude"){
+      setState(() {
+        latitude = double.parse(message);
+        print("Changed the value of the latitude");
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => MapWidget(client: client, latitude: latitude, longitude: longitude,)),
+        );
+      });
+    }
+
+    if(topic == "gunjan/longitude"){
+      setState(() {
+        longitude = double.parse(message);
+        print("Changed the value of the latitude");
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => MapWidget(client: client, latitude: latitude, longitude: longitude,)),
+        );
+      });
+    }
+
+    // setState(() {
+    //   _temp = double.parse(message);
+    // });
   }
 }
 

@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:mqtt_client/mqtt_client.dart' as mqtt;
+
 // import 'package:mapbox_gl/mapbox_gl.dart';
 
 void main() => runApp(MaterialApp(home: MapWidget()));
@@ -27,23 +29,30 @@ class AppConstants {
   static final myLocation = LatLng(26.1113, 91.4133);
 }
 
-final mapMarkers = [
-  MapMarker(
-      title: 'My Location',
-      address: 'IIT Guwahati',
-      location: AppConstants.myLocation,
-      ),
-  
-];
+
 
 class MapWidget extends StatefulWidget {
+
+  const MapWidget({Key key, this.client, this.latitude, this.longitude}) : super(key: key);
+
+  final mqtt.MqttClient client;
+  final double longitude, latitude;
+
   @override
-  MapWidgetState createState() {
-    return new MapWidgetState();
-  }
+  State<MapWidget> createState() => MapWidgetState(this.client, this.latitude, this.longitude);
 }
 
 class MapWidgetState extends State<MapWidget> {
+
+  mqtt.MqttClient client;
+  double longitude, latitude;
+  mqtt.MqttConnectionState connectionState;
+  String message = '';
+  LatLng myLocation;
+  // final myLocation = LatLng(26.1113, 91.4133);
+
+  MapWidgetState(this.client, this.latitude, this.longitude);
+
   @override
   // Widget build(BuildContext context) {
   //   return Scaffold(
@@ -94,6 +103,15 @@ class MapWidgetState extends State<MapWidget> {
 
     @override
   Widget build(BuildContext context) {
+    print("Refreshed again!");
+    myLocation = LatLng(latitude, longitude);
+    final mapMarkers = [
+      MapMarker(
+        title: 'My Location',
+        address: 'IIT Guwahati',
+        location: LatLng(latitude, longitude),
+      ),
+    ];
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.orange,
@@ -108,7 +126,7 @@ class MapWidgetState extends State<MapWidget> {
               minZoom: 5,
               maxZoom: 18,
               zoom: 10,
-              center: AppConstants.myLocation,
+              center: LatLng(latitude, longitude),
             ),
             layers: [
               TileLayerOptions(
@@ -120,12 +138,13 @@ class MapWidgetState extends State<MapWidget> {
                 },
               ),
               MarkerLayerOptions(
+
                 markers: [
                   for (final marker in mapMarkers)
                     Marker(
                       width: 80.0,
                       height: 80.0,
-                      point: marker.location ?? AppConstants.myLocation,
+                      point: marker.location ?? myLocation,
                       // builder: (ctx) => Container(
                       //   child: Column(
                       //     children: [

@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1069678905290",
+    "project_id": "smart-cycle-8a830",
+    "storage_bucket": "smart-cycle-8a830.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1069678905290:android:c3b91c171efb9656813133",
+        "android_client_info": {
+          "package_name": "com.gap.smart_cycle_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1069678905290-ba5f6crouvlk9rsuapq2mspqv3rquma8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gap.smart_cycle_app",
+            "certificate_hash": "725e87ea205ed2038d4e4d6e25de69df956d4329"
+          }
+        },
+        {
+          "client_id": "1069678905290-hvtaapmfoqajtiftse3ajib9n1vvgupb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDtchLOehZQtuy8DUibNl-8gNb-3mSe4r8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1069678905290-hvtaapmfoqajtiftse3ajib9n1vvgupb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

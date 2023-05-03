@@ -1,4 +1,5 @@
 // @dart=2.9
+
 import 'package:flutter/material.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
 import 'dart:async';
@@ -7,6 +8,9 @@ import 'package:smart_cycle_app/pages/location.dart';
 import 'package:smart_cycle_app/pages/lock.dart';
 import 'package:smart_cycle_app/pages/splash.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geolocator_android/geolocator_android.dart';
+import 'package:geolocator_apple/geolocator_apple.dart';
 
 void main() {
   runApp(
@@ -22,6 +26,14 @@ void main() {
   ); //
   // runApp(const MyApp());
 }
+
+// void _registerPlatformInstance() {
+//   if (Platform.isAndroid) {
+//     GeolocatorAndroid.registerWith();
+//   } else if (Platform.isIOS) {
+//     GeolocatorApple.registerWith();
+//   }
+// }
 
 class MyApp extends StatelessWidget {
   const MyApp({Key key}) : super(key: key);
@@ -88,8 +100,9 @@ class _MyHomePageState extends State<MyHomePage> {
   String clientIdentifier = 'android';
   String message = "Hello from flutter";
   // LatLng myLocation = LatLng(26.1113, 91.4133);
-  double latitude = 26.1113;
-  double longitude = 91.4133;
+  double latitude = 0;
+  double longitude = 0;
+  Position _currentPosition;
 
   List<String> topics = [
     'gunjan/movement',
@@ -145,6 +158,7 @@ class _MyHomePageState extends State<MyHomePage> {
     for (String topic in topics) {
       _subscribeToTopic(topic);
     }
+    // Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
   }
 
   @override
@@ -309,9 +323,23 @@ class _MyHomePageState extends State<MyHomePage> {
                       tooltip: 'Lock',
                       child: Icon(Icons.lock),
                     ),
+                    // add a button with a marker icon that will fetch the current location of the user
+                    FloatingActionButton(
+                      onPressed: () {
+                        // show a spinner while the location is being fetched
+                        _getCurrentPosition();
+                        setState(() {
+                          latitude = _currentPosition?.latitude;
+                          longitude = _currentPosition?.longitude;
+                        });
+                      },
+                      tooltip: 'Get Location',
+                      child: Icon(Icons.location_on),
+                    ),
                     // add a button with map icon which will navigate to the map page
                     FloatingActionButton(
                       onPressed: () {
+
                         // Navigator.pushNamed(context, '/location');
                         Navigator.push(
                           context,
@@ -465,6 +493,49 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       msg = message;
     });
+  }
+
+  Future<bool> _handleLocationPermission() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Location services are disabled. Please enable the services')));
+      return false;
+    }
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Location permissions are denied')));
+        return false;
+      }
+    }
+    if (permission == LocationPermission.deniedForever) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Location permissions are permanently denied, we cannot request permissions.')));
+      return false;
+    }
+    return true;
+  }
+
+  Future<void> _getCurrentPosition() async {
+    final hasPermission = await _handleLocationPermission();
+    if (!hasPermission) return;
+    await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high)
+        .then((Position position) {
+      setState(() => _currentPosition = position);
+    }).catchError((e) {
+      debugPrint(e);
+      print(e);
+    });
+    print("GOT LOCATION!!");
+    latitude = _currentPosition.latitude;
+    longitude = _currentPosition.longitude;
   }
 }
 

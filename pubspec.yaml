@@ -43,6 +43,8 @@ dependencies:
 #  flutter_native_splash: ^2.0.4
   dio: ^4.0.4
   location: ^4.3.0
+  firebase_core:
+  geolocator:
 
 dev_dependencies:
   flutter_test:

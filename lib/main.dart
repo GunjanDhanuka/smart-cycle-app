@@ -1,5 +1,6 @@
 // @dart=2.9
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
 import 'dart:async';
@@ -11,8 +12,11 @@ import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geolocator_android/geolocator_android.dart';
 import 'package:geolocator_apple/geolocator_apple.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(
     MaterialApp(
       initialRoute: '/',
@@ -42,6 +46,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Smart Cycle App',
       theme: ThemeData(
         primarySwatch: Colors.orange,
@@ -100,15 +105,16 @@ class _MyHomePageState extends State<MyHomePage> {
   String clientIdentifier = 'android';
   String message = "Hello from flutter";
   // LatLng myLocation = LatLng(26.1113, 91.4133);
-  double latitude = 0;
-  double longitude = 0;
+  double latitude = 26.1906;
+  double longitude = 91.6946;
   Position _currentPosition;
 
   List<String> topics = [
     'gunjan/movement',
     'gunjan/lock',
     'gunjan/longitude',
-    'gunjan/latitude'
+    'gunjan/latitude',
+    'gunjan/lux'
   ];
 
   String msg = "";
@@ -134,7 +140,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final mqtt.MqttConnectMessage connMess = mqtt.MqttConnectMessage()
         .withClientIdentifier(clientIdentifier)
         .startClean() // Non persistent session for testing
-        .withWillQos(mqtt.MqttQos.atMostOnce);
+        .withWillQos(mqtt.MqttQos.atLeastOnce);
     client.connectionMessage = connMess;
 
     try {
@@ -158,6 +164,25 @@ class _MyHomePageState extends State<MyHomePage> {
     for (String topic in topics) {
       _subscribeToTopic(topic);
     }
+
+    // show alert dialog that connection is established
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Connection Established"),
+          content: Text("MQTT Client connected"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
     // Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
   }
 
@@ -332,6 +357,18 @@ class _MyHomePageState extends State<MyHomePage> {
                           latitude = _currentPosition?.latitude;
                           longitude = _currentPosition?.longitude;
                         });
+
+                        // show a snackbar with the location
+                        // final snackBar = SnackBar(
+                        //   content: Text(
+                        //       'Latitude: $latitude, Longitude: $longitude'),
+                        //   action: SnackBarAction(
+                        //     label: 'Close',
+                        //     onPressed: () {
+                        //       // Some code to undo the change.
+                        //     },
+                        //   ),
+                        // );
                       },
                       tooltip: 'Get Location',
                       child: Icon(Icons.location_on),
@@ -490,6 +527,17 @@ class _MyHomePageState extends State<MyHomePage> {
       );
     }
 
+    if (topic == "gunjan/lux") {
+      double lux = double.parse(message);
+      if(lux > 0.01){
+        FirebaseFirestore.instance.collection('lux').add({'lux': lux, 'time': DateTime.now()}).then((DocumentReference doc) =>
+            print("DocumentSnapshot added with ID ${doc.id}")
+            );
+      }
+      // send data to firestore
+
+    }
+
     setState(() {
       msg = message;
     });
@@ -533,10 +581,38 @@ class _MyHomePageState extends State<MyHomePage> {
       debugPrint(e);
       print(e);
     });
-    print("GOT LOCATION!!");
     latitude = _currentPosition.latitude;
     longitude = _currentPosition.longitude;
+    print("GOT LOCATION");
+    // show an alert dialog to the user that location has been obtained
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Location Obtained"),
+          content: Text(
+              "Location has been obtained. Click OK to see the location of the cycle."),
+          actions: [
+            TextButton(
+              child: Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => MapWidget(
+                          client: client,
+                          latitude: latitude,
+                          longitude: longitude,
+                        )));
+              },
+            )
+          ],
+        );
+      },
+    );
   }
+
 }
 
 // TODO: Make navbar usable

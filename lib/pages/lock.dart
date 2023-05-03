@@ -18,7 +18,7 @@ class Lock extends StatefulWidget {
 }
 
 class _LockState extends State<Lock> {
-  bool _isLocked = false;
+  bool _isLocked = true;
   mqtt.MqttClient client;
   mqtt.MqttConnectionState connectionState;
   String message = '';

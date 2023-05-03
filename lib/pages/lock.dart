@@ -68,6 +68,7 @@ class _LockState extends State<Lock> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            // add a GIF image to show the lock and unlock action
             _isLocked ? const Text('Locked') : const Text('Unlocked'),
             _isLocked ? const Icon(Icons.lock) : const Icon(Icons.lock_open),
             _lockButton(),

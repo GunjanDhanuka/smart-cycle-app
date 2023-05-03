@@ -5,6 +5,9 @@ import 'dart:async';
 import 'package:mqtt_client/mqtt_client.dart' as mqtt;
 import 'package:smart_cycle_app/pages/location.dart';
 import 'package:smart_cycle_app/pages/lock.dart';
+import 'package:smart_cycle_app/pages/splash.dart';
+import 'package:animated_splash_screen/animated_splash_screen.dart';
+
 
 void main() {
   runApp(MaterialApp(
@@ -14,7 +17,9 @@ void main() {
       '/lock': (context) => const Lock(),
       '/location': (context) => const MapWidget(),
     },
-  )); //
+    debugShowCheckedModeBanner: false,
+  ),
+  ); //
   // runApp(const MyApp());
 }
 
@@ -29,7 +34,34 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.orange,
       ),
-      home: const MyHomePage(title: 'MQTT Client'),
+      // home: const MyHomePage(title: 'Smart Cycle App'),
+      // home: Splash(),
+      home: AnimatedSplashScreen(
+        // splash: Icons.motorcycle_rounded,
+        // splashIconSize: 100,
+        backgroundColor: Colors.orangeAccent,
+        duration:1500,
+        splashTransition: SplashTransition.fadeTransition,
+        splash: Center(
+          child: Column(
+            children: [
+              // cycle icon
+              Icon(Icons.motorcycle_rounded, color: Colors.white, size: 30,),
+              Container(
+                  child: Text(
+                    "Smart Cycle App",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )
+              ),
+            ],
+          ),
+        ),
+        nextScreen: MyHomePage(title: 'Smart Cycle App'),
+      ),
     );
   }
 }
@@ -242,33 +274,33 @@ class _MyHomePageState extends State<MyHomePage> {
             ],
           ),
         ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.lock),
-            label: 'Lock',
-            backgroundColor: Colors.blue,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.map),
-            label: 'Map',
-            backgroundColor: Colors.green,
-          ),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.settings),
-              label: 'Settings',
-            backgroundColor: Colors.yellow,
-          ),
-
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.white,
-        backgroundColor: Colors.orange,
-        onTap: _onItemTapped,
-        showUnselectedLabels: false,
-
-      ),
+      // bottomNavigationBar: BottomNavigationBar(
+      //   type: BottomNavigationBarType.fixed,
+      //   items: const <BottomNavigationBarItem>[
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.lock),
+      //       label: 'Lock',
+      //       backgroundColor: Colors.blue,
+      //     ),
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.map),
+      //       label: 'Map',
+      //       backgroundColor: Colors.green,
+      //     ),
+      //     BottomNavigationBarItem(
+      //         icon: Icon(Icons.settings),
+      //         label: 'Settings',
+      //       backgroundColor: Colors.yellow,
+      //     ),
+      //
+      //   ],
+      //   currentIndex: _selectedIndex,
+      //   selectedItemColor: Colors.white,
+      //   backgroundColor: Colors.orange,
+      //   onTap: _onItemTapped,
+      //   showUnselectedLabels: false,
+      //
+      // ),
     );
   }
 

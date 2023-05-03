@@ -39,6 +39,7 @@ dependencies:
   flutter_map: ^1.1.1
   flutter_mapbox_navigation: ^0.0.26
   shared_preferences: ^2.0.13
+  animated_splash_screen:
 #  flutter_native_splash: ^2.0.4
   dio: ^4.0.4
   location: ^4.3.0

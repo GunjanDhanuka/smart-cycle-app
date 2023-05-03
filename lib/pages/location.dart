@@ -138,7 +138,6 @@ class MapWidgetState extends State<MapWidget> {
                 },
               ),
               MarkerLayerOptions(
-
                 markers: [
                   for (final marker in mapMarkers)
                     Marker(
@@ -169,7 +168,8 @@ class MapWidgetState extends State<MapWidget> {
                       }
                     ),
                 ]
-              )
+              ),
+
             ],
           ),
         ],

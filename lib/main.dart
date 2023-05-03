@@ -8,17 +8,17 @@ import 'package:smart_cycle_app/pages/lock.dart';
 import 'package:smart_cycle_app/pages/splash.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 
-
 void main() {
-  runApp(MaterialApp(
-    initialRoute: '/',
-    routes: {
-      '/': (context) => const MyApp(),
-      '/lock': (context) => const Lock(),
-      '/location': (context) => const MapWidget(),
-    },
-    debugShowCheckedModeBanner: false,
-  ),
+  runApp(
+    MaterialApp(
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const MyApp(),
+        '/lock': (context) => const Lock(),
+        '/location': (context) => const MapWidget(),
+      },
+      debugShowCheckedModeBanner: false,
+    ),
   ); //
   // runApp(const MyApp());
 }
@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Smart Cycle App',
       theme: ThemeData(
         primarySwatch: Colors.orange,
       ),
@@ -40,23 +40,26 @@ class MyApp extends StatelessWidget {
         // splash: Icons.motorcycle_rounded,
         // splashIconSize: 100,
         backgroundColor: Colors.orangeAccent,
-        duration:1500,
+        duration: 1500,
         splashTransition: SplashTransition.fadeTransition,
         splash: Center(
           child: Column(
             children: [
               // cycle icon
-              Icon(Icons.motorcycle_rounded, color: Colors.white, size: 30,),
+              Icon(
+                Icons.motorcycle_rounded,
+                color: Colors.white,
+                size: 30,
+              ),
               Container(
                   child: Text(
-                    "Smart Cycle App",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  )
-              ),
+                "Smart Cycle App",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                ),
+              )),
             ],
           ),
         ),
@@ -71,7 +74,8 @@ class MyHomePage extends StatefulWidget {
 
   final String title;
 
-  @override  State<MyHomePage> createState() => _MyHomePageState();
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -87,9 +91,14 @@ class _MyHomePageState extends State<MyHomePage> {
   double latitude = 26.1113;
   double longitude = 91.4133;
 
-  List<String> topics = ['gunjan/movement', 'gunjan/lock', 'gunjan/longitude', 'gunjan/latitude'];
+  List<String> topics = [
+    'gunjan/movement',
+    'gunjan/lock',
+    'gunjan/longitude',
+    'gunjan/latitude'
+  ];
 
-  double _temp = 20;
+  String msg = "";
 
   mqtt.MqttClient client;
   mqtt.MqttConnectionState connectionState;
@@ -141,23 +150,37 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(widget.title),
-          centerTitle: true,
-        ),
-        body: Center(
+      appBar: AppBar(
+        title: Text(widget.title),
+        centerTitle: true,
+      ),
+      body: SingleChildScrollView(
+        physics: const ClampingScrollPhysics(),
+        child: Container(
+          height: MediaQuery.of(context).size.height*0.8,
           child:
               // wrap the text field in a container to set the width
               Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              SizedBox(
-                child: Text("Value received from MQTT is: " + _temp.toString()),
+              Container(
+                // add rounded corners and a border to the container with a solid fill with a padding
+                decoration: BoxDecoration(
+                  color: Colors.orangeAccent,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: Colors.black,
+                    width: 2,
+                  ),
+                ),
+                padding: EdgeInsets.all(10),
+                child: Text("Value received from MQTT is: " + msg),
               ),
               Container(
                 width: 200,
-                child: TextField(
+                child: TextFormField(
                   // set the hint text
+                  initialValue: broker,
                   decoration: InputDecoration(hintText: 'Enter the broker'),
                   onChanged: (value) {
                     setState(() {
@@ -168,9 +191,10 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               Container(
                 width: 200,
-                child: TextField(
+                child: TextFormField(
                   // set the hint text
                   decoration: InputDecoration(hintText: 'Enter the port'),
+                  initialValue: port.toString(),
                   onChanged: (value) {
                     setState(() {
                       port = int.parse(value);
@@ -178,52 +202,81 @@ class _MyHomePageState extends State<MyHomePage> {
                   },
                 ),
               ),
+              // a field to connect to a new topic. process only when user presses enter
               Container(
-                // textfield to ask for the topic to listen to
                 width: 200,
-                child: TextField(
+                child: TextFormField(
                   // set the hint text
-                  decoration:
-                      InputDecoration(hintText: 'Enter the topic to subscribe'),
-                  onChanged: (value) {
+                  decoration: InputDecoration(hintText: 'Enter new topic to subscribe to'),
+                  onFieldSubmitted: (value) {
                     setState(() {
+                      topics.add(value);
                       _subscribeToTopic(value);
                     });
                   },
                 ),
               ),
+              // add a heading for the list
+              Text("Subscribed Topics", style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),),
+              // show list of topics currently subscribed to and a button to unsubscribe
+              Container(
+                width: 200,
+                child: Column(
+                  children: [
+                    for (String topic in topics)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(topic),
+                          IconButton(
+                            icon: Icon(Icons.delete),
+                            onPressed: () {
+                              setState(() {
+                                topics.remove(topic);
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                  ],
+                ),
+              ),
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(
-                    // Add a
-                    child: TextField(
-                      // set the hint text
-                      decoration: InputDecoration(
-                          hintText: 'Enter the message to send on MQTT'),
-                      onChanged: (value) {
-                        setState(() {
-                          message = value;
-                        });
-                      },
-                    ),
-                    width: 200,
-                  ),
-                  // add a gap of 10 pixels
-                  SizedBox(
-                    width: 10,
-                  ),
-                  FloatingActionButton(
-                    onPressed: () {
-                      final mqtt.MqttClientPayloadBuilder builder =
-                          mqtt.MqttClientPayloadBuilder();
-                      builder.addString(message);
-                      client.publishMessage("gunjan/node2phone",
-                          mqtt.MqttQos.exactlyOnce, builder.payload);
-                    },
-                    tooltip: 'Publish',
-                    child: Icon(Icons.publish),
-                  ),
+                  // Container(
+                  //   // Add a
+                  //   child: TextField(
+                  //     // set the hint text
+                  //     decoration: InputDecoration(
+                  //         hintText: 'Enter the message to send on MQTT'),
+                  //     onChanged: (value) {
+                  //       setState(() {
+                  //         message = value;
+                  //       });
+                  //     },
+                  //   ),
+                  //   width: 200,
+                  // ),
+                  // // add a gap of 10 pixels
+                  // SizedBox(
+                  //   width: 10,
+                  // ),
+                  // FloatingActionButton(
+                  //   onPressed: () {
+                  //     final mqtt.MqttClientPayloadBuilder builder =
+                  //         mqtt.MqttClientPayloadBuilder();
+                  //     builder.addString(message);
+                  //     client.publishMessage("gunjan/node2phone",
+                  //         mqtt.MqttQos.exactlyOnce, builder.payload);
+                  //   },
+                  //   tooltip: 'Publish',
+                  //   child: Icon(Icons.publish),
+                  // ),
                 ],
               ),
               Container(
@@ -233,13 +286,13 @@ class _MyHomePageState extends State<MyHomePage> {
                   children: [
                     FloatingActionButton(
                       onPressed: _connect,
-                      tooltip: 'Play',
-                      child: Icon(Icons.play_arrow),
+                      tooltip: 'Connect to MQTT',
+                      child: Icon(Icons.wifi),
                     ),
                     FloatingActionButton(
                       onPressed: _disconnect,
-                      tooltip: 'Disconnect',
-                      child: Icon(Icons.stop),
+                      tooltip: 'Disconnect from MQTT',
+                      child: Icon(Icons.wifi_off),
                     ),
                     // add a button with lock icon which will navigate to the lock page
                     FloatingActionButton(
@@ -262,7 +315,12 @@ class _MyHomePageState extends State<MyHomePage> {
                         // Navigator.pushNamed(context, '/location');
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => MapWidget(client: client, latitude: latitude, longitude: longitude,)),
+                          MaterialPageRoute(
+                              builder: (context) => MapWidget(
+                                    client: client,
+                                    latitude: latitude,
+                                    longitude: longitude,
+                                  )),
                         );
                       },
                       tooltip: 'Map',
@@ -274,6 +332,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ],
           ),
         ),
+      ),
       // bottomNavigationBar: BottomNavigationBar(
       //   type: BottomNavigationBarType.fixed,
       //   items: const <BottomNavigationBarItem>[
@@ -342,7 +401,7 @@ class _MyHomePageState extends State<MyHomePage> {
     print("[MQTT client] message with message: ${message}");
 
     String topic = event[0].topic;
-    if(topic == "gunjan/movement"){
+    if (topic == "gunjan/movement") {
       // show an alert dialog to the user
       print("ALERTTTT!");
       showDialog(
@@ -350,13 +409,21 @@ class _MyHomePageState extends State<MyHomePage> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text("Movement Detected"),
-            content: Text("Movement has been detected in the cycle. Click OK to see the location of the cycle."),
+            content: Text(
+                "Movement has been detected in the cycle. Click OK to see the location of the cycle."),
             actions: [
               TextButton(
                 child: Text("OK"),
                 onPressed: () {
                   Navigator.of(context).pop();
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => MapWidget(client: client, latitude: latitude, longitude: longitude,)));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => MapWidget(
+                                client: client,
+                                latitude: latitude,
+                                longitude: longitude,
+                              )));
                 },
               )
             ],
@@ -365,29 +432,39 @@ class _MyHomePageState extends State<MyHomePage> {
       );
     }
 
-    if(topic == "gunjan/latitude"){
-        latitude = double.parse(message);
-        print("Changed the value of the latitude");
-        Navigator.of(context).pop();
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => MapWidget(client: client, latitude: latitude, longitude: longitude,)),
-        );
+    if (topic == "gunjan/latitude") {
+      latitude = double.parse(message);
+      print("Changed the value of the latitude");
+      Navigator.of(context).pop();
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => MapWidget(
+                  client: client,
+                  latitude: latitude,
+                  longitude: longitude,
+                )),
+      );
     }
 
-    if(topic == "gunjan/longitude"){
-        longitude = double.parse(message);
-        print("Changed the value of the latitude");
-        Navigator.of(context).pop();
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => MapWidget(client: client, latitude: latitude, longitude: longitude,)),
-        );
+    if (topic == "gunjan/longitude") {
+      longitude = double.parse(message);
+      print("Changed the value of the latitude");
+      Navigator.of(context).pop();
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => MapWidget(
+                  client: client,
+                  latitude: latitude,
+                  longitude: longitude,
+                )),
+      );
     }
 
-    // setState(() {
-    //   _temp = double.parse(message);
-    // });
+    setState(() {
+      msg = message;
+    });
   }
 }
 

@@ -334,25 +334,23 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     if(topic == "gunjan/latitude"){
-      setState(() {
         latitude = double.parse(message);
         print("Changed the value of the latitude");
+        Navigator.of(context).pop();
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => MapWidget(client: client, latitude: latitude, longitude: longitude,)),
         );
-      });
     }
 
     if(topic == "gunjan/longitude"){
-      setState(() {
         longitude = double.parse(message);
         print("Changed the value of the latitude");
+        Navigator.of(context).pop();
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => MapWidget(client: client, latitude: latitude, longitude: longitude,)),
         );
-      });
     }
 
     // setState(() {

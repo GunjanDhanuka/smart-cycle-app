@@ -95,6 +95,7 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
+
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   int _selectedIndex = 0;
@@ -108,13 +109,17 @@ class _MyHomePageState extends State<MyHomePage> {
   double latitude = 26.1906;
   double longitude = 91.6946;
   Position _currentPosition;
+  bool _isAlive = false;
+  Timer timer;
+  DateTime lastTime;
 
   List<String> topics = [
     'gunjan/movement',
     'gunjan/lock',
     'gunjan/longitude',
     'gunjan/latitude',
-    'gunjan/lux'
+    'gunjan/lux',
+    'gunjan/alive'
   ];
 
   String msg = "";
@@ -126,8 +131,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _subscribeToTopic(String topic) {
     if (connectionState == mqtt.MqttConnectionState.connected) {
-      client.subscribe(topic, mqtt.MqttQos.exactlyOnce);
+      client.subscribe(topic, mqtt.MqttQos.atLeastOnce);
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    timer = Timer.periodic(Duration(seconds: 3), (Timer t) => getCycleStatus());
+    lastTime = DateTime.now();
   }
 
   void _connect() async {
@@ -214,6 +226,21 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 padding: EdgeInsets.all(10),
                 child: Text("Value received from MQTT is: " + msg),
+              ),
+              // add an icon to show if the cycle is connected to MQTT or not based on the data from "gunjan/alive" channel
+              // if the value is 1 then the cycle is connected to MQTT else it is not connected
+              // check the value of _isAlive every 5 seconds and update the icon accordingly
+
+              Container(
+                child: getCycleStatus() ? Icon(
+                  Icons.motorcycle_rounded,
+                  color: Colors.green,
+                  size: 30,
+                ) : Icon(
+                  Icons.motorcycle_rounded,
+                  color: Colors.red,
+                  size: 30,
+                ),
               ),
               Container(
                 width: 200,
@@ -439,6 +466,35 @@ class _MyHomePageState extends State<MyHomePage> {
     client.disconnect();
     _onDisconnected();
   }
+  
+  bool getCycleStatus(){
+    print("getCycleStatus called");
+    DateTime now = DateTime.now();
+    print("currentTime: $now");
+    print("lastTime: $lastTime");
+    // if difference between now and last time is greater than 1 minute, then set cycleStatus to false
+    if(now.difference(lastTime).inSeconds > 3){
+      setState(() {
+        _isAlive = false;
+        // show an alert snackbar
+      });
+      final snackBar = SnackBar(
+        content: Text('Device is not connected'),
+        action: SnackBarAction(
+          label: 'Close',
+          onPressed: () {
+            // Some code to undo the change.
+          },
+        ),
+      );
+      // ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return false;
+    }
+    setState(() {
+      _isAlive = true;
+    });
+    return true;
+  }
 
   void _onDisconnected() {
     print('[MQTT client] _onDisconnected');
@@ -510,6 +566,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   longitude: longitude,
                 )),
       );
+    }
+
+    if(topic == "gunjan/alive"){
+      _isAlive = true;
+      lastTime = DateTime.now();
     }
 
     if (topic == "gunjan/longitude") {

@@ -40,7 +40,13 @@ class _LockState extends State<Lock> {
           final mqtt.MqttClientPayloadBuilder builder =
               mqtt.MqttClientPayloadBuilder();
           builder.addString(message);
-          client.publishMessage('gunjan/lock', mqtt.MqttQos.exactlyOnce, builder.payload);
+          client.publishMessage('gunjan/lock', mqtt.MqttQos.atLeastOnce, builder.payload);
+          // display a snackbar to show the message is sent
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Lock message sent'),
+            ),
+          );
           print("Lock lock");
         }
         // send a message to the broker when the button is turned off
@@ -49,7 +55,12 @@ class _LockState extends State<Lock> {
           final mqtt.MqttClientPayloadBuilder builder =
               mqtt.MqttClientPayloadBuilder();
           builder.addString(message);
-          client.publishMessage('gunjan/lock', mqtt.MqttQos.exactlyOnce, builder.payload);
+          client.publishMessage('gunjan/lock', mqtt.MqttQos.atLeastOnce, builder.payload);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Unlock message sent'),
+            ),
+          );
           print("unlock unlock");
         }
       },

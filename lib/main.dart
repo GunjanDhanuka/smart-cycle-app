@@ -31,14 +31,6 @@ void main() async {
   // runApp(const MyApp());
 }
 
-// void _registerPlatformInstance() {
-//   if (Platform.isAndroid) {
-//     GeolocatorAndroid.registerWith();
-//   } else if (Platform.isIOS) {
-//     GeolocatorApple.registerWith();
-//   }
-// }
-
 class MyApp extends StatelessWidget {
   const MyApp({Key key}) : super(key: key);
 
@@ -51,11 +43,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.orange,
       ),
-      // home: const MyHomePage(title: 'Smart Cycle App'),
-      // home: Splash(),
       home: AnimatedSplashScreen(
-        // splash: Icons.motorcycle_rounded,
-        // splashIconSize: 100,
         backgroundColor: Colors.orangeAccent,
         duration: 1500,
         splashTransition: SplashTransition.fadeTransition,
@@ -94,7 +82,6 @@ class MyHomePage extends StatefulWidget {
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
-
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
@@ -208,7 +195,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: SingleChildScrollView(
         physics: const ClampingScrollPhysics(),
         child: Container(
-          height: MediaQuery.of(context).size.height*0.8,
+          height: MediaQuery.of(context).size.height * 0.8,
           child:
               // wrap the text field in a container to set the width
               Column(
@@ -232,15 +219,17 @@ class _MyHomePageState extends State<MyHomePage> {
               // check the value of _isAlive every 5 seconds and update the icon accordingly
 
               Container(
-                child: getCycleStatus() ? Icon(
-                  Icons.motorcycle_rounded,
-                  color: Colors.green,
-                  size: 30,
-                ) : Icon(
-                  Icons.motorcycle_rounded,
-                  color: Colors.red,
-                  size: 30,
-                ),
+                child: getCycleStatus()
+                    ? Icon(
+                        Icons.motorcycle_rounded,
+                        color: Colors.green,
+                        size: 30,
+                      )
+                    : Icon(
+                        Icons.motorcycle_rounded,
+                        color: Colors.red,
+                        size: 30,
+                      ),
               ),
               Container(
                 width: 200,
@@ -273,7 +262,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 width: 200,
                 child: TextFormField(
                   // set the hint text
-                  decoration: InputDecoration(hintText: 'Enter new topic to subscribe to'),
+                  decoration: InputDecoration(
+                      hintText: 'Enter new topic to subscribe to'),
                   onFieldSubmitted: (value) {
                     setState(() {
                       topics.add(value);
@@ -283,10 +273,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
               // add a heading for the list
-              Text("Subscribed Topics", style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),),
+              Text(
+                "Subscribed Topics",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               // show list of topics currently subscribed to and a button to unsubscribe
               Container(
                 width: 200,
@@ -310,41 +303,6 @@ class _MyHomePageState extends State<MyHomePage> {
                   ],
                 ),
               ),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Container(
-                  //   // Add a
-                  //   child: TextField(
-                  //     // set the hint text
-                  //     decoration: InputDecoration(
-                  //         hintText: 'Enter the message to send on MQTT'),
-                  //     onChanged: (value) {
-                  //       setState(() {
-                  //         message = value;
-                  //       });
-                  //     },
-                  //   ),
-                  //   width: 200,
-                  // ),
-                  // // add a gap of 10 pixels
-                  // SizedBox(
-                  //   width: 10,
-                  // ),
-                  // FloatingActionButton(
-                  //   onPressed: () {
-                  //     final mqtt.MqttClientPayloadBuilder builder =
-                  //         mqtt.MqttClientPayloadBuilder();
-                  //     builder.addString(message);
-                  //     client.publishMessage("gunjan/node2phone",
-                  //         mqtt.MqttQos.exactlyOnce, builder.payload);
-                  //   },
-                  //   tooltip: 'Publish',
-                  //   child: Icon(Icons.publish),
-                  // ),
-                ],
-              ),
               Container(
                 alignment: Alignment.center,
                 child: Row(
@@ -363,7 +321,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     // add a button with lock icon which will navigate to the lock page
                     FloatingActionButton(
                       onPressed: () {
-                        // Navigator.pushNamed(context, '/lock');
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -384,18 +341,6 @@ class _MyHomePageState extends State<MyHomePage> {
                           latitude = _currentPosition?.latitude;
                           longitude = _currentPosition?.longitude;
                         });
-
-                        // show a snackbar with the location
-                        // final snackBar = SnackBar(
-                        //   content: Text(
-                        //       'Latitude: $latitude, Longitude: $longitude'),
-                        //   action: SnackBarAction(
-                        //     label: 'Close',
-                        //     onPressed: () {
-                        //       // Some code to undo the change.
-                        //     },
-                        //   ),
-                        // );
                       },
                       tooltip: 'Get Location',
                       child: Icon(Icons.location_on),
@@ -403,7 +348,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     // add a button with map icon which will navigate to the map page
                     FloatingActionButton(
                       onPressed: () {
-
                         // Navigator.pushNamed(context, '/location');
                         Navigator.push(
                           context,
@@ -425,33 +369,6 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
       ),
-      // bottomNavigationBar: BottomNavigationBar(
-      //   type: BottomNavigationBarType.fixed,
-      //   items: const <BottomNavigationBarItem>[
-      //     BottomNavigationBarItem(
-      //       icon: Icon(Icons.lock),
-      //       label: 'Lock',
-      //       backgroundColor: Colors.blue,
-      //     ),
-      //     BottomNavigationBarItem(
-      //       icon: Icon(Icons.map),
-      //       label: 'Map',
-      //       backgroundColor: Colors.green,
-      //     ),
-      //     BottomNavigationBarItem(
-      //         icon: Icon(Icons.settings),
-      //         label: 'Settings',
-      //       backgroundColor: Colors.yellow,
-      //     ),
-      //
-      //   ],
-      //   currentIndex: _selectedIndex,
-      //   selectedItemColor: Colors.white,
-      //   backgroundColor: Colors.orange,
-      //   onTap: _onItemTapped,
-      //   showUnselectedLabels: false,
-      //
-      // ),
     );
   }
 
@@ -466,14 +383,14 @@ class _MyHomePageState extends State<MyHomePage> {
     client.disconnect();
     _onDisconnected();
   }
-  
-  bool getCycleStatus(){
+
+  bool getCycleStatus() {
     print("getCycleStatus called");
     DateTime now = DateTime.now();
     print("currentTime: $now");
     print("lastTime: $lastTime");
     // if difference between now and last time is greater than 1 minute, then set cycleStatus to false
-    if(now.difference(lastTime).inSeconds > 3){
+    if (now.difference(lastTime).inSeconds > 3) {
       setState(() {
         _isAlive = false;
         // show an alert snackbar
@@ -487,7 +404,7 @@ class _MyHomePageState extends State<MyHomePage> {
           },
         ),
       );
-      // ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
       return false;
     }
     setState(() {
@@ -499,7 +416,6 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onDisconnected() {
     print('[MQTT client] _onDisconnected');
     setState(() {
-      //topics.clear();
       connectionState = client.connectionState;
       client = null;
       subscription.cancel();
@@ -568,7 +484,7 @@ class _MyHomePageState extends State<MyHomePage> {
       );
     }
 
-    if(topic == "gunjan/alive"){
+    if (topic == "gunjan/alive") {
       _isAlive = true;
       lastTime = DateTime.now();
     }
@@ -590,10 +506,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
     if (topic == "gunjan/lux") {
       double lux = double.parse(message);
-      if(lux > 0.01){
-        FirebaseFirestore.instance.collection('lux').add({'lux': lux, 'time': DateTime.now()}).then((DocumentReference doc) =>
-            print("DocumentSnapshot added with ID ${doc.id}")
-            );
+      if (lux > 0.01) {
+        FirebaseFirestore.instance
+            .collection('lux')
+            .add({'lux': lux, 'time': DateTime.now()}).then(
+                (DocumentReference doc) =>
+                    print("DocumentSnapshot added with ID ${doc.id}"));
       }
       // send data to firestore
 
@@ -611,7 +529,8 @@ class _MyHomePageState extends State<MyHomePage> {
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Location services are disabled. Please enable the services')));
+          content: Text(
+              'Location services are disabled. Please enable the services')));
       return false;
     }
     permission = await Geolocator.checkPermission();
@@ -625,7 +544,8 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     if (permission == LocationPermission.deniedForever) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Location permissions are permanently denied, we cannot request permissions.')));
+          content: Text(
+              'Location permissions are permanently denied, we cannot request permissions.')));
       return false;
     }
     return true;
@@ -634,8 +554,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> _getCurrentPosition() async {
     final hasPermission = await _handleLocationPermission();
     if (!hasPermission) return;
-    await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high)
+    await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
         .then((Position position) {
       setState(() => _currentPosition = position);
     }).catchError((e) {
@@ -662,10 +581,10 @@ class _MyHomePageState extends State<MyHomePage> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => MapWidget(
-                          client: client,
-                          latitude: latitude,
-                          longitude: longitude,
-                        )));
+                              client: client,
+                              latitude: latitude,
+                              longitude: longitude,
+                            )));
               },
             )
           ],
@@ -673,8 +592,4 @@ class _MyHomePageState extends State<MyHomePage> {
       },
     );
   }
-
 }
-
-// TODO: Make navbar usable
-// TODO:

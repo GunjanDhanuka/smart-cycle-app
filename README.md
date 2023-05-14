@@ -1,16 +1,23 @@
-# smart_cycle_app
+# Smart Cycle Application
 
-Companion app for the Smart cycle project
+Companion app for the Smart Cycle Project for the CS321: Smart Systems Lab
+
+## Group Members
+
+- Anindya Vijayvargeeya
+- Gunjan Dhanuka
+- Pranjal Singh
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+1. Install Flutter on your system using the online guide at: https://docs.flutter.dev/get-started/install
+2. Open the current folder, and run `flutter pub get` to install the dependencies.
+3. Then enter, `flutter run` in the terminal after starting your Android Device Emulator to fire up the app.
 
-A few resources to get you started if this is your first Flutter project:
+## Features implemented in the app:
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- Connect / disconnect to Cycle Alert.
+- Alarm if the cycle moves when locked.
+- Ability to tweak and connect to MQTT channels for further usage.
+- Show the GPS data of the cycle when the alarm is buzzed.
+- Allow to lock or unlock the cycle remotely.

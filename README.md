@@ -21,3 +21,5 @@ Companion app for the Smart Cycle Project for the CS321: Smart Systems Lab
 - Ability to tweak and connect to MQTT channels for further usage.
 - Show the GPS data of the cycle when the alarm is buzzed.
 - Allow to lock or unlock the cycle remotely.
+
+### You can find the code used for the hardware [here](https://github.com/Fronsto/Smart_Cycle).
